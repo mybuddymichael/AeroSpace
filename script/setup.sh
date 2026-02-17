@@ -29,6 +29,7 @@ if /bin/test -z "${NUKE_PATH:-}"; then
     add-optional-dep-to-bin bundler # build-docs.sh
     add-optional-dep-to-bin xcbeautify # build-release.sh
     add-optional-dep-to-bin git
+    add-optional-dep-to-bin mise # RubyGems plugin used by mise-managed Ruby invokes `mise reshim`
     add-optional-dep-to-bin swift
     add-optional-dep-to-bin swiftly
 
