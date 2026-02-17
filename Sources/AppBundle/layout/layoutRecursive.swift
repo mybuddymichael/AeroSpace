@@ -35,6 +35,7 @@ extension TreeNode {
                     } else {
                         lastAppliedLayoutPhysicalRect = physicalRect
                         window.isFullscreen = false
+                        window.clearFullscreenStyle()
                         window.setAxFrame(point, CGSize(width: width, height: height))
                     }
                 }
@@ -83,16 +84,29 @@ extension Window {
         if isFullscreen {
             layoutFullscreen(context)
             isFullscreen = false
+            clearFullscreenStyle()
         }
     }
 
     @MainActor
     fileprivate func layoutFullscreen(_ context: LayoutContext) {
-        let monitorRect = noOuterGapsInFullscreen
+        let baseRect = noOuterGapsInFullscreen
             ? context.workspace.workspaceMonitor.visibleRect
             : context.workspace.workspaceMonitor.visibleRectPaddedByOuterGaps
-        setAxFrame(monitorRect.topLeftCorner, CGSize(width: monitorRect.width, height: monitorRect.height))
+        let rect = resolveFullscreenRect(baseRect: baseRect, widthPercent: fullscreenWidthPercent)
+        setAxFrame(rect.topLeftCorner, CGSize(width: rect.width, height: rect.height))
     }
+}
+
+func resolveFullscreenRect(baseRect: Rect, widthPercent: UInt?) -> Rect {
+    guard let widthPercent else { return baseRect }
+    let width = baseRect.width * CGFloat(widthPercent) / 100
+    return Rect(
+        topLeftX: baseRect.topLeftX + (baseRect.width - width) / 2,
+        topLeftY: baseRect.topLeftY,
+        width: width,
+        height: baseRect.height,
+    )
 }
 
 extension TilingContainer {

@@ -10,18 +10,34 @@ struct FullscreenCommand: Command {
         guard let window = target.windowOrNil else {
             return io.err(noWindowIsFocused)
         }
-        let newState: Bool = switch args.toggle {
-            case .on: true
-            case .off: false
-            case .toggle: !window.isFullscreen
+        let requestedStyle = FullscreenStyle(noOuterGaps: args.noOuterGaps, widthPercent: args.widthPercent)
+
+        switch args.toggle {
+            case .off:
+                if !window.isFullscreen {
+                    io.err("Already not fullscreen. Tip: use --fail-if-noop to exit with non-zero code")
+                    return !args.failIfNoop
+                }
+                window.isFullscreen = false
+                window.clearFullscreenStyle()
+            case .on:
+                if window.isFullscreen && window.fullscreenStyle == requestedStyle {
+                    io.err("Already fullscreen. Tip: use --fail-if-noop to exit with non-zero code")
+                    return !args.failIfNoop
+                }
+                window.isFullscreen = true
+                window.setFullscreenStyle(requestedStyle)
+            case .toggle:
+                if !window.isFullscreen {
+                    window.isFullscreen = true
+                    window.setFullscreenStyle(requestedStyle)
+                } else if window.fullscreenStyle == requestedStyle {
+                    window.isFullscreen = false
+                    window.clearFullscreenStyle()
+                } else {
+                    window.setFullscreenStyle(requestedStyle)
+                }
         }
-        if newState == window.isFullscreen {
-            io.err((newState ? "Already fullscreen. " : "Already not fullscreen. ") +
-                "Tip: use --fail-if-noop to exit with non-zero code")
-            return !args.failIfNoop
-        }
-        window.isFullscreen = newState
-        window.noOuterGapsInFullscreen = args.noOuterGaps
 
         // Focus on its own workspace
         window.markAsMostRecentChild()

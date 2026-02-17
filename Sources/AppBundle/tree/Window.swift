@@ -7,6 +7,7 @@ open class Window: TreeNode, Hashable {
     var lastFloatingSize: CGSize?
     var isFullscreen: Bool = false
     var noOuterGapsInFullscreen: Bool = false
+    var fullscreenWidthPercent: UInt? = nil
     var layoutReason: LayoutReason = .standard
 
     @MainActor
@@ -45,6 +46,11 @@ open class Window: TreeNode, Hashable {
     func setAxFrame(_ topLeft: CGPoint?, _ size: CGSize?) { die("Not implemented") }
 }
 
+struct FullscreenStyle: Equatable, Sendable {
+    let noOuterGaps: Bool
+    let widthPercent: UInt?
+}
+
 enum LayoutReason: Equatable {
     case standard
     /// Reason for the cur temp layout is macOS native fullscreen, minimize, or hide
@@ -58,6 +64,20 @@ extension Window {
     @MainActor
     func bindAsFloatingWindow(to workspace: Workspace) -> BindingData? {
         bind(to: workspace, adaptiveWeight: WEIGHT_AUTO, index: INDEX_BIND_LAST)
+    }
+
+    var fullscreenStyle: FullscreenStyle {
+        .init(noOuterGaps: noOuterGapsInFullscreen, widthPercent: fullscreenWidthPercent)
+    }
+
+    func setFullscreenStyle(_ style: FullscreenStyle) {
+        noOuterGapsInFullscreen = style.noOuterGaps
+        fullscreenWidthPercent = style.widthPercent
+    }
+
+    func clearFullscreenStyle() {
+        noOuterGapsInFullscreen = false
+        fullscreenWidthPercent = nil
     }
 
     func asMacWindow() -> MacWindow { self as! MacWindow }
