@@ -282,6 +282,7 @@ You can navigate the windows in an `h_accordion` by using the `focus (left|right
 While in a `v_accordion`, you can navigate the windows using the `focus (up|down)` command.
 
 Accordion padding is configurable via `accordion-padding` option.
+Width of a single tiled window in a workspace is configurable via `single-window-width-percent`.
 
 [#normalization]
 === Normalization

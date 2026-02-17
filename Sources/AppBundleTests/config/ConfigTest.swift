@@ -28,6 +28,38 @@ final class ConfigTest: XCTestCase {
         assertEquals(errors.descriptions, ["config-version: Must be in [1, 2] range"])
     }
 
+    func testSingleWindowWidthPercentParse() {
+        let (config, errors) = parseConfig(
+            """
+            single-window-width-percent = 60
+            """,
+        )
+        assertEquals(errors, [])
+        assertEquals(config.singleWindowWidthPercent, 60)
+    }
+
+    func testSingleWindowWidthPercentOutOfBounds() {
+        let (_, errors0) = parseConfig(
+            """
+            single-window-width-percent = 0
+            """,
+        )
+        assertEquals(errors0.descriptions, ["single-window-width-percent: Must be in [1, 100] range"])
+
+        let (_, errors101) = parseConfig(
+            """
+            single-window-width-percent = 101
+            """,
+        )
+        assertEquals(errors101.descriptions, ["single-window-width-percent: Must be in [1, 100] range"])
+    }
+
+    func testSingleWindowWidthPercentDefault() {
+        let (config, errors) = parseConfig("")
+        assertEquals(errors, [])
+        assertEquals(config.singleWindowWidthPercent, 100)
+    }
+
     func testExecOnWorkspaceChangeDifferentTypesError() {
         let (_, errors) = parseConfig(
             """

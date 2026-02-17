@@ -25,6 +25,11 @@ enable-normalization-opposite-orientation-for-nested-containers = true
 # You can set 0 to disable the padding feature
 accordion-padding = 30
 
+# Limit width of a single tiled window in a workspace
+# 100 means no width cap (full available width, respecting outer gaps)
+# Fallback value (if you omit the key): single-window-width-percent = 100
+single-window-width-percent = 100
+
 # Possible values: tiles|accordion
 default-root-container-layout = 'tiles'
 

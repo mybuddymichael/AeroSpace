@@ -33,10 +33,15 @@ extension TreeNode {
                         lastAppliedLayoutPhysicalRect = nil
                         window.layoutFullscreen(context)
                     } else {
-                        lastAppliedLayoutPhysicalRect = physicalRect
+                        let rect = resolveSoloTiledWindowRect(
+                            baseRect: physicalRect,
+                            isSoloTiledWorkspaceWindow: context.isSoloTiledWorkspaceWindow,
+                            widthPercent: config.singleWindowWidthPercent,
+                        )
+                        lastAppliedLayoutPhysicalRect = rect
                         window.isFullscreen = false
                         window.clearFullscreenStyle()
-                        window.setAxFrame(point, CGSize(width: width, height: height))
+                        window.setAxFrame(rect.topLeftCorner, CGSize(width: rect.width, height: rect.height))
                     }
                 }
             case .tilingContainer(let container):
@@ -58,11 +63,13 @@ extension TreeNode {
 private struct LayoutContext {
     let workspace: Workspace
     let resolvedGaps: ResolvedGaps
+    let isSoloTiledWorkspaceWindow: Bool
 
     @MainActor
     init(_ workspace: Workspace) {
         self.workspace = workspace
         self.resolvedGaps = ResolvedGaps(gaps: config.gaps, monitor: workspace.workspaceMonitor)
+        self.isSoloTiledWorkspaceWindow = workspace.rootTilingContainer.allLeafWindowsRecursive.count == 1
     }
 }
 
@@ -99,7 +106,17 @@ extension Window {
 }
 
 func resolveFullscreenRect(baseRect: Rect, widthPercent: UInt?) -> Rect {
+    resolveCenteredWidthRect(baseRect: baseRect, widthPercent: widthPercent)
+}
+
+func resolveSoloTiledWindowRect(baseRect: Rect, isSoloTiledWorkspaceWindow: Bool, widthPercent: UInt) -> Rect {
+    guard isSoloTiledWorkspaceWindow else { return baseRect }
+    return resolveCenteredWidthRect(baseRect: baseRect, widthPercent: widthPercent)
+}
+
+func resolveCenteredWidthRect(baseRect: Rect, widthPercent: UInt?) -> Rect {
     guard let widthPercent else { return baseRect }
+    guard widthPercent < 100 else { return baseRect }
     let width = baseRect.width * CGFloat(widthPercent) / 100
     return Rect(
         topLeftX: baseRect.topLeftX + (baseRect.width - width) / 2,

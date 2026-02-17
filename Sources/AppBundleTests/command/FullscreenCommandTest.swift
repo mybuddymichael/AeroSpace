@@ -67,6 +67,31 @@ final class FullscreenCommandTest: XCTestCase {
         assertEquals(rect.height, 700)
     }
 
+    func testResolveFullscreenRectNoopAt100Percent() {
+        let base = Rect(topLeftX: 100, topLeftY: 200, width: 1000, height: 700)
+        let rect = resolveFullscreenRect(baseRect: base, widthPercent: 100)
+        assertEquals(rect.topLeftX, base.topLeftX)
+        assertEquals(rect.topLeftY, base.topLeftY)
+        assertEquals(rect.width, base.width)
+        assertEquals(rect.height, base.height)
+    }
+
+    func testResolveSoloTiledWindowRectAppliesOnlyForSoloWorkspace() {
+        let base = Rect(topLeftX: 100, topLeftY: 200, width: 1000, height: 700)
+
+        let solo = resolveSoloTiledWindowRect(baseRect: base, isSoloTiledWorkspaceWindow: true, widthPercent: 60)
+        assertEquals(solo.topLeftX, 300)
+        assertEquals(solo.topLeftY, 200)
+        assertEquals(solo.width, 600)
+        assertEquals(solo.height, 700)
+
+        let nonSolo = resolveSoloTiledWindowRect(baseRect: base, isSoloTiledWorkspaceWindow: false, widthPercent: 60)
+        assertEquals(nonSolo.topLeftX, base.topLeftX)
+        assertEquals(nonSolo.topLeftY, base.topLeftY)
+        assertEquals(nonSolo.width, base.width)
+        assertEquals(nonSolo.height, base.height)
+    }
+
     func testFullscreenDoesNotReflowTree() async throws {
         let workspace = Workspace.get(byName: name)
         workspace.rootTilingContainer.apply {
