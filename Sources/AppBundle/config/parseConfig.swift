@@ -113,7 +113,7 @@ private let configParser: [String: any ParserProtocol<Config>] = [
     "auto-reload-config": Parser(\.autoReloadConfig, parseBool),
     "automatically-unhide-macos-hidden-apps": Parser(\.automaticallyUnhideMacosHiddenApps, parseBool),
     "accordion-padding": Parser(\.accordionPadding, parseInt),
-    "single-window-width-percent": Parser(\.singleWindowWidthPercent, parsePercent1To100),
+    "single-window-width-percent": Parser(\.singleWindowWidthPercent, parseSingleWindowWidthPercent),
     persistentWorkspacesKey: Parser(\.persistentWorkspaces, parsePersistentWorkspaces),
     "exec-on-workspace-change": Parser(\.execOnWorkspaceChange, parseArrayOfStrings),
     "exec": Parser(\.execConfig, parseExecConfig),
@@ -250,12 +250,33 @@ func parseInt(_ raw: TOMLValueConvertible, _ backtrace: TomlBacktrace) -> Parsed
     raw.int.orFailure(expectedActualTypeError(expected: .int, actual: raw.type, backtrace))
 }
 
-func parsePercent1To100(_ raw: TOMLValueConvertible, _ backtrace: TomlBacktrace) -> ParsedToml<UInt> {
-    let min = 1
-    let max = 100
-    return parseInt(raw, backtrace)
-        .filter(.semantic(backtrace, "Must be in [\(min), \(max)] range")) { (min ... max).contains($0) }
-        .map { UInt($0) }
+func parseSingleWindowWidthPercent(
+    _ raw: TOMLValueConvertible,
+    _ backtrace: TomlBacktrace,
+    _ errors: inout [TomlParseError],
+) -> DynamicConfigValue<Int> {
+    guard raw.array != nil else {
+        errors.append(.semantic(backtrace, "Expected array. Example: [{ monitor.main = 70 }, 100]"))
+        return .constant(100)
+    }
+
+    let parsed = parseDynamicValue(raw, Int.self, 100, backtrace, &errors)
+
+    switch parsed {
+        case .constant(let value):
+            if !(1 ... 100).contains(value) {
+                errors.append(.semantic(backtrace, "Must be in [1, 100] range"))
+            }
+        case .perMonitor(let rules, let defaultValue):
+            for (index, rule) in rules.enumerated() where !(1 ... 100).contains(rule.value) {
+                errors.append(.semantic(backtrace + .index(index), "Must be in [1, 100] range"))
+            }
+            if !(1 ... 100).contains(defaultValue) {
+                errors.append(.semantic(backtrace + .index(rules.count), "Must be in [1, 100] range"))
+            }
+    }
+
+    return parsed
 }
 
 func parseString(_ raw: TOMLValueConvertible, _ backtrace: TomlBacktrace) -> ParsedToml<String> {

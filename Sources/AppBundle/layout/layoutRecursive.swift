@@ -1,4 +1,5 @@
 import AppKit
+import Common
 
 extension Workspace {
     @MainActor
@@ -36,7 +37,7 @@ extension TreeNode {
                         let rect = resolveSoloTiledWindowRect(
                             baseRect: physicalRect,
                             isSoloTiledWorkspaceWindow: context.isSoloTiledWorkspaceWindow,
-                            widthPercent: config.singleWindowWidthPercent,
+                            widthPercent: context.soloTiledWindowWidthPercent,
                         )
                         lastAppliedLayoutPhysicalRect = rect
                         window.isFullscreen = false
@@ -64,12 +65,16 @@ private struct LayoutContext {
     let workspace: Workspace
     let resolvedGaps: ResolvedGaps
     let isSoloTiledWorkspaceWindow: Bool
+    let soloTiledWindowWidthPercent: UInt
 
     @MainActor
     init(_ workspace: Workspace) {
         self.workspace = workspace
         self.resolvedGaps = ResolvedGaps(gaps: config.gaps, monitor: workspace.workspaceMonitor)
         self.isSoloTiledWorkspaceWindow = workspace.rootTilingContainer.allLeafWindowsRecursive.count == 1
+        let resolvedWidthPercent = config.singleWindowWidthPercent.getValue(for: workspace.workspaceMonitor)
+        check((1 ... 100).contains(resolvedWidthPercent), "single-window-width-percent must be in [1, 100] range")
+        self.soloTiledWindowWidthPercent = UInt(resolvedWidthPercent)
     }
 }
 

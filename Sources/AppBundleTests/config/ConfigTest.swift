@@ -31,33 +31,48 @@ final class ConfigTest: XCTestCase {
     func testSingleWindowWidthPercentParse() {
         let (config, errors) = parseConfig(
             """
-            single-window-width-percent = 60
+            single-window-width-percent = [{ monitor.main = 60 }, 100]
             """,
         )
         assertEquals(errors, [])
-        assertEquals(config.singleWindowWidthPercent, 60)
+        assertEquals(
+            config.singleWindowWidthPercent,
+            .perMonitor([PerMonitorValue(description: .main, value: 60)], default: 100),
+        )
     }
 
     func testSingleWindowWidthPercentOutOfBounds() {
         let (_, errors0) = parseConfig(
             """
-            single-window-width-percent = 0
+            single-window-width-percent = [{ monitor.main = 0 }, 100]
             """,
         )
-        assertEquals(errors0.descriptions, ["single-window-width-percent: Must be in [1, 100] range"])
+        assertEquals(errors0.descriptions, ["single-window-width-percent[0]: Must be in [1, 100] range"])
 
         let (_, errors101) = parseConfig(
             """
-            single-window-width-percent = 101
+            single-window-width-percent = [{ monitor.main = 60 }, 101]
             """,
         )
-        assertEquals(errors101.descriptions, ["single-window-width-percent: Must be in [1, 100] range"])
+        assertEquals(errors101.descriptions, ["single-window-width-percent[1]: Must be in [1, 100] range"])
+    }
+
+    func testSingleWindowWidthPercentRequiresArray() {
+        let (_, errors) = parseConfig(
+            """
+            single-window-width-percent = 60
+            """,
+        )
+        assertEquals(
+            errors.descriptions,
+            ["single-window-width-percent: Expected array. Example: [{ monitor.main = 70 }, 100]"],
+        )
     }
 
     func testSingleWindowWidthPercentDefault() {
         let (config, errors) = parseConfig("")
         assertEquals(errors, [])
-        assertEquals(config.singleWindowWidthPercent, 100)
+        assertEquals(config.singleWindowWidthPercent, .constant(100))
     }
 
     func testExecOnWorkspaceChangeDifferentTypesError() {

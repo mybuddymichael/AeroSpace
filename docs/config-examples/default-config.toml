@@ -27,8 +27,12 @@ accordion-padding = 30
 
 # Limit width of a single tiled window in a workspace
 # 100 means no width cap (full available width, respecting outer gaps)
+# Possible values:
+# - Per monitor: single-window-width-percent = [{ monitor.main = 70 }, { monitor."some-pattern" = 80 }, 100]
+#                In this example, 100 is a default value when there is no match.
+#                Monitor pattern is the same as for 'workspace-to-monitor-force-assignment'.
 # Fallback value (if you omit the key): single-window-width-percent = 100
-single-window-width-percent = 100
+single-window-width-percent = [{ monitor.main = 100 }, 100]
 
 # Possible values: tiles|accordion
 default-root-container-layout = 'tiles'
