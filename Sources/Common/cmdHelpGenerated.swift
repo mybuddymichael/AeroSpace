@@ -132,6 +132,9 @@ let split_help_generated = """
 let summon_workspace_help_generated = """
     USAGE: summon-workspace [-h|--help] [--fail-if-noop] <workspace>
     """
+let swap_workspace_help_generated = """
+    USAGE: swap-workspace [-h|--help] <workspace>
+    """
 let swap_help_generated = """
     USAGE: swap [-h|--help] [--window-id <window-id>] [--swap-focus]
                 [--wrap-around]

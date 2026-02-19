@@ -207,6 +207,11 @@ on-mode-changed = []
     alt-shift-y = 'move-node-to-workspace Y'
     alt-shift-z = 'move-node-to-workspace Z'
 
+    # Optional: swap current workspace tree with another workspace tree.
+    # You can replicate this pattern for other workspace IDs.
+    # See: https://nikitabobko.github.io/AeroSpace/commands#swap-workspace
+    alt-shift-ctrl-1 = 'swap-workspace 1'
+
     # See: https://nikitabobko.github.io/AeroSpace/commands#workspace-back-and-forth
     alt-tab = 'workspace-back-and-forth'
     # See: https://nikitabobko.github.io/AeroSpace/commands#move-workspace-to-monitor

@@ -1,0 +1,40 @@
+= aerospace-swap-workspace(1)
+include::util/man-attributes.adoc[]
+:manname: aerospace-swap-workspace
+// tag::purpose[]
+:manpurpose: Swap the focused workspace tree with the specified workspace.
+// end::purpose[]
+
+// =========================================================== Synopsis
+== Synopsis
+[verse]
+// tag::synopsis[]
+aerospace swap-workspace [-h|--help] <workspace>
+
+// end::synopsis[]
+
+// =========================================================== Description
+== Description
+
+// tag::body[]
+{manpurpose}
+
+Workspace names don't change. Workspace-to-monitor assignment also stays the same.
+The focused workspace remains focused.
+
+If the specified workspace is already focused, the command does nothing.
+
+// =========================================================== Options
+include::./util/conditional-options-header.adoc[]
+
+-h, --help:: Print help
+
+// =========================================================== Arguments
+include::./util/conditional-arguments-header.adoc[]
+
+<workspace>:: The workspace to swap tree with.
+
+// end::body[]
+
+// =========================================================== Footer
+include::util/man-footer.adoc[]

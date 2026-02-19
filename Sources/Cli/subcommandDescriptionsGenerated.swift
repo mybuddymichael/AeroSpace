@@ -33,6 +33,7 @@ let subcommandDescriptions = [
     ["  resize", "Resize the focused window"],
     ["  split", "Split focused window"],
     ["  summon-workspace", "Move the requested workspace to the focused monitor."],
+    ["  swap-workspace", "Swap the focused workspace tree with the specified workspace."],
     ["  swap", "Swaps the focused window with another window."],
     ["  trigger-binding", "Trigger AeroSpace binding as if it was pressed by user"],
     ["  volume", "Manipulate volume"],

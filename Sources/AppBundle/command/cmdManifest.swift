@@ -70,6 +70,8 @@ extension CmdArgs {
                 command = SummonWorkspaceCommand(args: self as! SummonWorkspaceCmdArgs)
             case .swap:
                 command = SwapCommand(args: self as! SwapCmdArgs)
+            case .swapWorkspace:
+                command = SwapWorkspaceCommand(args: self as! SwapWorkspaceCmdArgs)
             case .triggerBinding:
                 command = TriggerBindingCommand(args: self as! TriggerBindingCmdArgs)
             case .volume:

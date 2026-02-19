@@ -1,6 +1,35 @@
 import Common
 
 extension Workspace {
+    @MainActor
+    func swapChildren(with other: Workspace) {
+        if self == other { return }
+
+        let selfChildren = detachChildren()
+        let otherChildren = other.detachChildren()
+
+        other.attachChildren(selfChildren)
+        attachChildren(otherChildren)
+    }
+
+    @MainActor
+    private func detachChildren() -> [DetachedWorkspaceChild] {
+        children.reversed()
+            .map { child in DetachedWorkspaceChild(node: child, binding: child.unbindFromParent()) }
+            .reversed()
+    }
+
+    @MainActor
+    private func attachChildren(_ detached: [DetachedWorkspaceChild]) {
+        for child in detached {
+            child.node.bind(
+                to: self,
+                adaptiveWeight: child.binding.adaptiveWeight,
+                index: child.binding.index,
+            )
+        }
+    }
+
     @MainActor var rootTilingContainer: TilingContainer {
         let containers = children.filterIsInstance(of: TilingContainer.self)
         switch containers.count {
@@ -47,4 +76,9 @@ extension Workspace {
             .compactMap { $0.resolveMonitor(sortedMonitors: sortedMonitors) }
             .first
     }
+}
+
+private struct DetachedWorkspaceChild {
+    let node: TreeNode
+    let binding: BindingData
 }

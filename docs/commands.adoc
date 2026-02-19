@@ -175,6 +175,13 @@ include::aerospace-swap.adoc[tags=synopsis]
 include::aerospace-swap.adoc[tags=purpose]
 include::aerospace-swap.adoc[tags=body]
 
+== swap-workspace
+----
+include::aerospace-swap-workspace.adoc[tags=synopsis]
+----
+include::aerospace-swap-workspace.adoc[tags=purpose]
+include::aerospace-swap-workspace.adoc[tags=body]
+
 == summon-workspace
 ----
 include::./aerospace-summon-workspace.adoc[tags=synopsis]

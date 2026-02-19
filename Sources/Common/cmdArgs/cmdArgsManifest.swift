@@ -34,6 +34,7 @@ public enum CmdKind: String, CaseIterable, Equatable, Sendable {
     case split
     case summonWorkspace = "summon-workspace"
     case swap
+    case swapWorkspace = "swap-workspace"
     case triggerBinding = "trigger-binding"
     case volume
     case workspace
@@ -114,6 +115,8 @@ func initSubcommands() -> [String: any SubCommandParserProtocol] {
                 result[kind.rawValue] = SubCommandParser(SummonWorkspaceCmdArgs.init)
             case .swap:
                 result[kind.rawValue] = SubCommandParser(parseSwapCmdArgs)
+            case .swapWorkspace:
+                result[kind.rawValue] = SubCommandParser(SwapWorkspaceCmdArgs.init)
             case .triggerBinding:
                 result[kind.rawValue] = SubCommandParser(parseTriggerBindingCmdArgs)
             case .volume:

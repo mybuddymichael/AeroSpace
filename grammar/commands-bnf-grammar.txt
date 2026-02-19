@@ -66,6 +66,8 @@ aerospace -h;
 
     | swap [--swap-focus|--wrap-around|--window-id <window_id>]... (left|down|up|right|dfs-next|dfs-prev) [--swap-focus|--wrap-around|--window-id <window_id>]...
 
+    | swap-workspace <workspace>
+
     | summon-workspace [--fail-if-noop] <workspace> [--fail-if-noop]
 
     | trigger-binding <binding> --mode <mode_id>
